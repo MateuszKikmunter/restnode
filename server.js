@@ -12,8 +12,21 @@ app.listen(APP_PORT, () => {
 });
 
 //root endpoint
-app.get("/", (req, res, next) => {
-    res.json({ message: "OK" });
+app.get("/api/users", (req, res, next) => {
+    const sql = "SELECT * FROM user";
+    const params = [];
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+
+        res.json({
+            message: "success",
+            status: 200,
+            data: rows
+        });
+    });
 });
 
 // Insert here other API endpoints
