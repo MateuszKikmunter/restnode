@@ -29,4 +29,4 @@ const db = new sqlite.Database(dbSource, (err) => {
     }
 });
 
-modeule.exports = db;
+module.exports = db;

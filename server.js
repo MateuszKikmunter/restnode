@@ -1,6 +1,7 @@
 //import express and create server
 const express = require("express");
 const app = express();
+const db = require("./database");
 
 //server port
 const APP_PORT = 8080;
