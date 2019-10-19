@@ -12,5 +12,12 @@ app.listen(APP_PORT, () => {
 
 //root endpoint
 app.get("/", (req, res, next) => {
-    res.json("{ message: OK }");
+    res.json({ message: "OK" });
+});
+
+// Insert here other API endpoints
+
+// Default response for any other request
+app.use(function (req, res) {
+    res.status(404);
 });
