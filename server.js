@@ -5,6 +5,7 @@ const db = require("./database");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const md5 = require("md5");
+const Validator = require("./validator");
 
 //server port
 const APP_PORT = 8080;
@@ -16,6 +17,8 @@ app.use(bodyParser.json());
 
 //use router
 const api = express.Router();
+
+const validator = new Validator();
 
 //get all users
 api.get("/users", (req, res, next) => {
@@ -53,16 +56,11 @@ api.get("/users/:id", (req, res) => {
 });
 
 api.post("/users/", (req, res) => {
-    const errors = [];
     const properties = ["name", "email", "password"];
-    properties.forEach(prop => {
-        if (!req.body[prop]) {
-            errors.push(`${prop} is required`);
-        }
-    });
+    const validationResult = validator.validate(properties, req.body);
 
-    if (errors.length) {
-        res.status(400).json({ "error": errors.join(", ") });
+    if (validationResult.length) {
+        res.status(422).json({ "error": validationResult.join(", ") });
         return;
     }
 
@@ -90,19 +88,11 @@ api.post("/users/", (req, res) => {
 });
 
 api.patch("/users/:id", (req, res) => {
-    const errors = [];
     const properties = ["name", "email", "password"];
-    properties.forEach(prop => {
-        if (!req.body[prop]) {
-            errors.push(`${prop} is required.`);
-        }
-    });
+    const validationResult = validator.validate(properties, req.body);
 
-    if (errors.length) {
-        res.status(422).json({
-            validationErrors: errors.join(", ")
-        });
-
+    if (validationResult.length) {
+        res.status(422).json({ "error": validationResult.join(", ") });
         return;
     }
 
