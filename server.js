@@ -89,6 +89,49 @@ api.post("/users/", (req, res) => {
     });
 });
 
+api.patch("/users/:id", (req, res) => {
+    const errors = [];
+    const properties = ["name", "email", "password"];
+    properties.forEach(prop => {
+        if (!req.body[prop]) {
+            errors.push(`${prop} is required.`);
+        }
+    });
+
+    if (errors.length) {
+        res.status(422).json({
+            validationErrors: errors.join(", ")
+        });
+
+        return;
+    }
+
+    const data = {
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password ? md5(req.body.password) : null
+    };
+
+    db.run(`UPDATE user SET
+                name = COALESCE(?, name),
+                email = COALESCE(?, email),
+                password = COALESCE(?, password)
+                WHERE id = ?`,
+        [data.name, data.email, data.password, req.params.id],
+        function (err) {
+            if (err) {
+                res.status(400).json({ error: err.message });
+                return;
+            }
+
+            res.json({
+                message: "success",
+                data: data,
+                changes: this.changes
+            });
+        });
+});
+
 app.use("/api", api);
 app.listen(APP_PORT, () => {
     console.log(`server running and listening on ${APP_PORT}`);
