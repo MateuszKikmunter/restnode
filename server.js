@@ -59,7 +59,7 @@ api.post("/users/", (req, res) => {
     const properties = ["name", "email", "password"];
     const validationResult = validator.validate(properties, req.body);
 
-    if (validationResult.length) {
+    if (validationResult) {
         res.status(422).json({ "error": validationResult.join(", ") });
         return;
     }
@@ -91,7 +91,7 @@ api.patch("/users/:id", (req, res) => {
     const properties = ["name", "email", "password"];
     const validationResult = validator.validate(properties, req.body);
 
-    if (validationResult.length) {
+    if (validationResult) {
         res.status(422).json({ "error": validationResult.join(", ") });
         return;
     }
@@ -120,6 +120,22 @@ api.patch("/users/:id", (req, res) => {
                 changes: this.changes
             });
         });
+});
+
+api.delete("/users/:id", (req, res) => {
+    const sql = "DELETE FROM user WHERE id = ?";
+    db.run(sql, [req.params.id], function(err) {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+
+        res.json({
+            message: "success",
+            status: 200,
+            changes: this.changes
+        });
+    });
 });
 
 app.use("/api", api);
