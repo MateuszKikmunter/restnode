@@ -33,6 +33,23 @@ api.get("/users", (req, res, next) => {
     });
 });
 
+api.get("/users/:id", (req, res) => {
+    const sql = "SELECT * FROM user WHERE id = ?";
+    const params = [req.params.id];
+    db.get(sql, params, (err, row) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+
+        res.json({
+            message: "success",
+            status: 200,
+            data: row
+        });
+    });
+});
+
 app.use("/api", api);
 app.listen(APP_PORT, () => {
     console.log(`server running and listening on ${APP_PORT}`);
