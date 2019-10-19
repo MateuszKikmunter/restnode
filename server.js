@@ -2,17 +2,21 @@
 const express = require("express");
 const app = express();
 const db = require("./database");
+const cors = require("cors");
+const bodyParser = require("body-parser");
 
 //server port
 const APP_PORT = 8080;
 
 //start server
-app.listen(APP_PORT, () => {
-    console.log(`server running and listening on ${APP_PORT}`);
-});
+app.use(cors());
+app.use(bodyParser.json());
 
-//root endpoint
-app.get("/api/users", (req, res, next) => {
+//use router
+const api = express.Router();
+
+//get all users
+api.get("/users", (req, res, next) => {
     const sql = "SELECT * FROM user";
     const params = [];
     db.all(sql, params, (err, rows) => {
@@ -29,9 +33,7 @@ app.get("/api/users", (req, res, next) => {
     });
 });
 
-// Insert here other API endpoints
-
-// Default response for any other request
-app.use(function (req, res) {
-    res.status(404);
+app.use("/api", api);
+app.listen(APP_PORT, () => {
+    console.log(`server running and listening on ${APP_PORT}`);
 });
